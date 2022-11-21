@@ -1,30 +1,27 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/XF86keysym.h>
+
+#define TERMINAL "st"
+#define STATUSBAR "dwmblocks"
+
 /* appearance */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
-static const unsigned int gappx     = 5;        /* gaps between windows */
+static const unsigned int gappx     = 6;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "FiraCode Nerd Font:pixelsize=11" };
-static const char dmenufont[]       = "FiraCode Nerd Font:pixelsize=11";
-static const char col_gray1[]       = "#222222";
+static const char *fonts[]          = { "Fira Code Nerd Font:pixelsize=11" };
+static const char dmenufont[]       = "Fira Code Nerd Font:pixelsize=11";
+static const char col_gray1[]       = "#000000";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_cyan[]        = "#6600cc";
-static const char drun_prompt[]     = "run:";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
-};
-
-#define TERMINAL "st"
-
-static const char *const autostart[] = {
-	"dwmstatus", NULL,
-	NULL /* terminate */
 };
 
 /* tagging */
@@ -62,26 +59,27 @@ static const Layout layouts[] = {
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* commands */
+static const char drun_prompt[] = "run:"; /* dmenu prompt */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-p", drun_prompt, "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { TERMINAL, NULL };
-
-#include <X11/XF86keysym.h>
-
-/* commands */
 static const char *xob[] = { "alsa-xob", NULL };
-static const char *upvol[] = { "amixer", "-q", "set", "Master", "5+", NULL };
-static const char *downvol[] = { "amixer", "-q", "set", "Master", "5-", NULL };
+static const char *upvol[] = { "amixer", "-q", "set", "Master", "5%+", NULL };
+static const char *downvol[] = { "amixer", "-q", "set", "Master", "5%-", NULL };
 static const char *mute[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
-static const char *screenshot[] = { "/bin/sh", "-c", "import -window root $HOME/Pictures/Screenshots/$(date +'%s_print.png')", NULL };
+static const char *screenshot[] = { "/bin/sh", "-c", "import -window root $HOME/Pictures/Screenshots/$(date +'%s_print.png') && notify-send '  Screenshot saved!'", NULL };
 static const char *pausempd[] = { "mpc", "toggle", NULL };
-static const char *music[] = { TERMINAL, "-e", "ncmpcpp", NULL };
-static const char *notify[] = { "notify-send", "  Screenshot saved!", NULL };
-static const char *browser[] = { "luakit", NULL };
-static const char *email[] = { TERMINAL, "-e", "neomutt", NULL };
+static const char *music[] = { TERMINAL, "-e", "ncmpcpp-ueberzug", NULL };
+static const char *browser[] = { "qutebrowser", NULL };
+static const char *email[] = { "/bin/sh", "-c", "st -e mutt && pkill -RTMIN+11 dwmblocks", NULL };
 static const char *mixertui[] = { TERMINAL, "-e", "alsamixer", NULL };
 static const char *reboot_comp[] = { "reboot_comp", NULL };
 static const char *bookmarks[] = { "bookmarks", NULL };
+static const char *brightup[] = { "/bin/sh", "-c", "xbacklight -inc 5 -steps 30 && pkill -RTMIN+12 dwmblocks", NULL };
+static const char *brightdown[] = { "/bin/sh", "-c", "xbacklight -dec 5 -steps 30 && pkill -RTMIN+12 dwmblocks", NULL };
+static const char *comp[] = { "togglecomp", NULL };
+static const char *rss[] = { "rss_feed", NULL };
+static const char *youtube[] = { "youtube", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -124,24 +122,22 @@ static Key keys[] = {
         { MODKEY|ShiftMask,             XK_b,      spawn,          {.v = bookmarks } },
         { MODKEY|ShiftMask,             XK_r,      spawn,          {.v = reboot_comp } },
         { MODKEY|ShiftMask,             XK_l,      spawn,          {.v = browser } },
-        { MODKEY,                       XK_a,      spawn,          {.v = mixertui } },
         { MODKEY|ShiftMask,             XK_m,      spawn,          {.v = music } },
+        { MODKEY,                       XK_a,      spawn,          {.v = mixertui } },
         { MODKEY,                       XK_e,      spawn,          {.v = email } },
-        { MODKEY,                       XK_F8,     spawn,          {.v = upvol } },
-        { MODKEY,                       XK_F7,     spawn,          {.v = downvol } },
-        { MODKEY,                       XK_F6,     spawn,          {.v = mute } },
-        { MODKEY,                       XK_F8,     spawn,          {.v = xob } },
-        { MODKEY,                       XK_F7,     spawn,          {.v = xob } },
-        { MODKEY,                       XK_F6,     spawn,          {.v = xob } },
+        { MODKEY,                       XK_r,      spawn,          {.v = rss } },
+        { MODKEY,                       XK_y,      spawn,          {.v = youtube } },
         { 0,         XF86XK_AudioRaiseVolume,      spawn,          {.v = upvol } },
         { 0,         XF86XK_AudioLowerVolume,      spawn,          {.v = downvol } },
         { 0,         XF86XK_AudioMute,             spawn,          {.v = mute } },
         { 0,         XF86XK_AudioRaiseVolume,      spawn,          {.v = xob } },
         { 0,         XF86XK_AudioLowerVolume,      spawn,          {.v = xob } },
         { 0,         XF86XK_AudioMute,             spawn,          {.v = xob } },
+        { 0,         XF86XK_MonBrightnessUp,       spawn,          {.v = brightup } },
+        { 0,         XF86XK_MonBrightnessDown,     spawn,          {.v = brightdown } },
         { 0,         XK_Pause,                     spawn,          {.v = pausempd } },
         { 0,         XK_Print,                     spawn,          {.v = screenshot } },
-        { 0,         XK_Print,                     spawn,          {.v = notify } },
+        { 0,         XK_F8,                        spawn,          {.v = comp } },
 };
 
 /* button definitions */
@@ -151,7 +147,9 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+        { ClkStatusText,        0,              Button1,        sigstatusbar,   {.i = 1} },
+	{ ClkStatusText,        0,              Button2,        sigstatusbar,   {.i = 2} },
+	{ ClkStatusText,        0,              Button3,        sigstatusbar,   {.i = 3} },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
@@ -160,4 +158,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
