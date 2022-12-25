@@ -7,21 +7,37 @@
 
 /* appearance */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
-static const unsigned int gappx     = 6;        /* gaps between windows */
+static const unsigned int gappx     = 10;       /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "Fira Code Nerd Font:pixelsize=11" };
 static const char dmenufont[]       = "Fira Code Nerd Font:pixelsize=11";
-static const char col_gray1[]       = "#000000";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#6600cc";
+static const char norm_fg[]         = "#0abdc6";
+static const char norm_bg[]         = "#091833";
+static const char norm_border[]     = "#091833";
+static const char sel_fg[]          = "#ea00d9";
+static const char sel_bg[]          = "#321959";
+static const char sel_border[]      = "#0abdc6";
+
+/* bar opacity
+ * 0xff is no transparency.
+ * 0xee adds wee bit of transparency.
+ * 0xdd adds adds a bit more transparency.
+ * Play with the value to get desired transparency.
+ */
+static const unsigned int baralpha  = 0xee;
+static const unsigned int borderalpha = OPAQUE;
+
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+    /*               fg       bg       border   */
+    [SchemeNorm] = { norm_fg, norm_bg, norm_border },
+    [SchemeSel]  = { sel_fg,  sel_bg,  sel_border  },
+};
+static const unsigned int alphas[][3]      = {
+	/*               fg      bg        border     */
+	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
+	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
 };
 
 /* tagging */
@@ -61,7 +77,7 @@ static const Layout layouts[] = {
 /* commands */
 static const char drun_prompt[] = "run:"; /* dmenu prompt */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-p", drun_prompt, "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-p", drun_prompt, "-m", dmenumon, "-fn",dmenufont, "-nb", norm_bg, "-nf", norm_fg, "-sb", sel_bg, "-sf", sel_fg, NULL };
 static const char *termcmd[]  = { TERMINAL, NULL };
 static const char *xob[] = { "alsa-xob", NULL };
 static const char *upvol[] = { "amixer", "-q", "set", "Master", "5%+", NULL };
@@ -70,10 +86,10 @@ static const char *mute[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *screenshot[] = { "/bin/sh", "-c", "import -window root $HOME/Pictures/Screenshots/$(date +'%s_print.png') && notify-send '  Screenshot saved!'", NULL };
 static const char *pausempd[] = { "mpc", "toggle", NULL };
 static const char *music[] = { TERMINAL, "-e", "ncmpcpp-ueberzug", NULL };
-static const char *browser[] = { "qutebrowser", NULL };
-static const char *email[] = { "/bin/sh", "-c", "st -e mutt && pkill -RTMIN+11 dwmblocks", NULL };
+static const char *browser[] = { "luakit", NULL };
+static const char *email[] = { "/bin/sh", "-c", "st -e neomutt && pkill -RTMIN+11 dwmblocks", NULL };
 static const char *mixertui[] = { TERMINAL, "-e", "alsamixer", NULL };
-static const char *reboot_comp[] = { "reboot_comp", NULL };
+static const char *sysact[] = { "sysact", NULL };
 static const char *bookmarks[] = { "bookmarks", NULL };
 static const char *brightup[] = { "/bin/sh", "-c", "xbacklight -inc 5 -steps 30 && pkill -RTMIN+12 dwmblocks", NULL };
 static const char *brightdown[] = { "/bin/sh", "-c", "xbacklight -dec 5 -steps 30 && pkill -RTMIN+12 dwmblocks", NULL };
@@ -88,6 +104,10 @@ static Key keys[] = {
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_Down,   focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_Up,     focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_Left,   focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_Right,  focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_p,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
@@ -119,8 +139,9 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
+        { MODKEY|ShiftMask,             XK_c,      quit,           {1} },
         { MODKEY|ShiftMask,             XK_b,      spawn,          {.v = bookmarks } },
-        { MODKEY|ShiftMask,             XK_r,      spawn,          {.v = reboot_comp } },
+        { MODKEY|ShiftMask,             XK_r,      spawn,          {.v = sysact } },
         { MODKEY|ShiftMask,             XK_l,      spawn,          {.v = browser } },
         { MODKEY|ShiftMask,             XK_m,      spawn,          {.v = music } },
         { MODKEY,                       XK_a,      spawn,          {.v = mixertui } },

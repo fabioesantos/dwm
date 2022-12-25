@@ -3,12 +3,17 @@ dwm is an extremely fast, small, and dynamic window manager for X.
 
 If you want to see my scripts and [dotfiles](https://github.com/fabioesantos/Dotfiles).
 
-## Patches applied
+[Cyberpunk-Neon](https://github.com/Roboron3042/Cyberpunk-Neon) colorscheme
+![screenshot](screenshot.png)
+
+[##](##) Patches applied
 
 + dwm-hide_vacant_tags
-+ dwm-fixborders
++ dwm-alpha
 + dwm-fullgaps
 + dwm-statuscmd - for clickable statusbar (I use [dwmblocks-async](https://github.com/UtkarshVerma/dwmblocks-async))
++ dwm-restartsig
++ dwm-noborderfloatingfix
 
 ## Installation
 
@@ -30,5 +35,3 @@ Add the following line to your .xinitrc to start dwm using startx:
 
 The configuration of dwm is done by creating a custom config.h
 and (re)compiling the source code.
-
-![screenshot](screenshot.png)
