@@ -3,7 +3,6 @@ dwm is an extremely fast, small, and dynamic window manager for X.
 
 If you want to see my scripts and [dotfiles](https://github.com/fabioesantos/Dotfiles).
 
-[Cyberpunk-Neon](https://github.com/Roboron3042/Cyberpunk-Neon) colorscheme
 ![screenshot](screenshot.png)
 
 ## Patches applied
@@ -14,6 +13,7 @@ If you want to see my scripts and [dotfiles](https://github.com/fabioesantos/Dot
 + dwm-statuscmd - for clickable statusbar (I use [dwmblocks-async](https://github.com/UtkarshVerma/dwmblocks-async))
 + dwm-restartsig
 + dwm-noborderfloatingfix
++ dwm-floatrules
 
 ## Installation
 
